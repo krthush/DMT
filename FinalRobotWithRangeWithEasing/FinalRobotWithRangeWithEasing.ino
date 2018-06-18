@@ -17,10 +17,10 @@ ServoCos gripServo;
 int sweepDirection = 1;
 
 // intial positions
-int elbowNewAngle = 0;
-int shoulderNewAngle = 0;
-int twistNewAngle = 0;
-int gripNewAngle = 0;
+int elbowNewAngle = 1;
+int shoulderNewAngle = 1;
+int twistNewAngle = 1;
+int gripNewAngle = 1;
 
 // Declarations for Switch
 RF24 radio(2, 4); // CE, CSN
@@ -119,12 +119,12 @@ void loop() {
     if (gripServo.hasStopped()) { // there is also .isMoving()
       if (sweepDirection == 1) {
         sweepDirection = -1;
-        gripServo.setupEase(gripNewAngle, moveTime);
+        gripServo.setupEase(gripNewAngle, moveTime); // NOTE: Slow motion for testing
       }
       else
       {
         sweepDirection = 1;
-        gripServo.setupEase(twistNewAngle, moveTime);
+        gripServo.setupEase(gripNewAngle, moveTime); // NOTE: Slow motion for testing 
       }
     }
     gripServo.updatePosition();

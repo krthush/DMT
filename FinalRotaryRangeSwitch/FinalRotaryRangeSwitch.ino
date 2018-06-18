@@ -27,15 +27,15 @@ int shoulderLastValue = -1;
 int twistLastValue = -1;
 int gripLastValue = -1;
 
-int elbowValue = 0;
-int shoulderValue = 0;
-int twistValue = 0;
-int gripValue = 0;
+int elbowValue = 120;
+int shoulderValue = 170;
+int twistValue = 73;
+int gripValue = 70;
 
-int elbowNewAngle = 0;
-int shoulderNewAngle = 0;
-int twistNewAngle = 0;
-int gripNewAngle = 0;
+int elbowNewAngle = 120;
+int shoulderNewAngle = 170;
+int twistNewAngle = 73;
+int gripNewAngle = 70;
 
 String comma;
 String allAngles;
@@ -85,7 +85,7 @@ void setup() {
   pinMode(A11, INPUT);
   pinMode(A12, INPUT);
   pinMode(A13, INPUT); // Button
-  gripEncoder = new ClickEncoder(A11, A12, A13, 1);
+  gripEncoder = new ClickEncoder(A11, A12, A13, 4);
 
   Timer1.initialize(1000);
   Timer1.attachInterrupt(timerIsr);
@@ -124,8 +124,12 @@ void loop() {
       if (elbowValue != elbowLastValue) {
         elbowLastValue = elbowValue;
       }
-      if (elbowValue >= 0 && elbowValue <= 180) {
+      if (elbowValue > 0 && elbowValue < 180) {
         elbowNewAngle = elbowValue;
+      } else if (elbowValue <= 0) {
+        elbowValue = 1;
+      } else if (elbowValue >= 180) {
+        elbowValue = 179;
       }
 
       /* Shoulder Encoder Code */
@@ -133,8 +137,12 @@ void loop() {
       if (shoulderValue != shoulderLastValue) {
         shoulderLastValue = shoulderValue;
       }
-      if (shoulderValue >= 0 && shoulderValue <= 180) {
+      if (shoulderValue > 0 && shoulderValue < 180) {
         shoulderNewAngle = shoulderValue;
+      } else if (shoulderValue <= 0) {
+        shoulderValue = 1;
+      } else if (shoulderValue >= 180) {
+        shoulderValue = 179;
       }
 
       /* Twist Encoder Code */
@@ -142,8 +150,12 @@ void loop() {
       if (twistValue != twistLastValue) {
         twistLastValue = twistValue;
       }
-      if (twistValue >= 0 && twistValue <= 180) {
+      if (twistValue > 0 && twistValue < 180) {
         twistNewAngle = twistValue;
+      } else if (twistValue <= 0) {
+        twistValue = 1;
+      } else if (twistValue >= 180) {
+        twistValue = 179;
       }
 
       /* Grip Encoder Code */
@@ -151,8 +163,12 @@ void loop() {
       if (gripValue != gripLastValue) {
         gripLastValue = gripValue;
       }
-      if (gripValue >= 0 && gripValue <= 180) {
+      if (gripValue > 0 && gripValue <= 90) {
         gripNewAngle = gripValue;
+      } else if (gripValue <= 0) {
+        gripValue = 1;
+      } else if (gripValue >= 180) {
+        gripValue = 179;
       }
 
       // Strings are combined to allAngles to be sent through radio/serial
@@ -167,8 +183,8 @@ void loop() {
       Serial.print("Kinect ");
 
       /* SHOULDER AND ELBOW obtained from serial which comes from Kinect code */
-      elbowNewAngle = Serial.parseInt();
-      shoulderNewAngle = Serial.parseInt();
+      elbowNewAngle = 180-Serial.parseInt(); // Flip for calibration
+      shoulderNewAngle = 180-Serial.parseInt(); // Flip for calibration
 
       // strings are combined to allAngles to be sent through radio/serial
       allAngles = elbowNewAngle + comma + shoulderNewAngle + comma + twistNewAngle + comma + gripNewAngle;
